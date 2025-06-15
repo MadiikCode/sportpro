@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Каталог спортивных товаров{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Заголовок и элементы управления -->
+    <div class="text-center mb-12 animate-slide-up">
+        <h1 class="text-4xl md:text-5xl font-display font-bold text-gradient mb-4">Каталог спортивных товаров</h1>
+
+        <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+            <!-- Поиск -->
+            <form method="get" class="w-full sm:w-auto">
+                <div class="relative">
+                    <input type="text" name="search" value="{{ search_query|default:'' }}"
+                           class="bg-glass border border-white/20 rounded-full pl-10 pr-4 py-2 w-full text-black"
+                           placeholder="Поиск товаров...">
+                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50"></i>
+                </div>
+            </form>
+
+            {% if user.is_authenticated %}
+            <a href="{% url 'sport_app:add_sport' %}" class="btn-primary inline-flex items-center whitespace-nowrap">
+                <i class="fas fa-plus-circle mr-2"></i> Добавить товар
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Список товаров -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+{% for sport in sports %}
+<div class="...">
+    {% if sport.image %}
+    <div class="h-48 overflow-hidden">
+        <img src="{{ sport.image.url }}" alt="{{ sport.name }}" class="w-full h-full object-cover">
+    </div>
+    {% else %}
+    <div class="h-48 bg-gray-700 flex items-center justify-center">
+        <i class="fas fa-image text-4xl text-gray-500"></i>
+    </div>
+    {% endif %}
+
+            <!-- Информация о товаре -->
+            <div class="p-6">
+                <h3 class="text-xl font-display font-bold mb-2">{{ sport.name }}</h3>
+                <p class="text-white/80 mb-4">{{ sport.description|truncatechars:100 }}</p>
+
+                <!-- Футер карточки -->
+                <div class="flex flex-col space-y-3 pt-4 border-t border-white/10">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-white/60">
+                            <i class="far fa-calendar-alt mr-1"></i> {{ sport.created_at|date:"d.m.Y" }}
+                        </span>
+                        <!-- Кнопка "Посмотреть" -->
+                        <a href="{% url 'sport_app:sport_detail' sport.id %}"
+                           class="text-sport-primary hover:text-sport-accent transition-colors flex items-center">
+                            <i class="fas fa-eye mr-1"></i> Посмотреть
+                        </a>
+                    </div>
+
+                    <!-- Кнопки редактирования/удаления для автора -->
+                    {% if user == sport.author or user.is_superuser %}
+                    <div class="flex space-x-2 justify-end">
+                        <a href="{% url 'sport_app:edit_sport' sport.id %}"
+                           class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-sport-primary transition-colors"
+                           title="Редактировать">
+                            <i class="fas fa-edit text-sm"></i>
+                        </a>
+                        <a href="{% url 'sport_app:delete_sport' sport.id %}"
+                           class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-red-500 transition-colors"
+                           title="Удалить">
+                            <i class="fas fa-trash-alt text-sm"></i>
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-span-full text-center py-12">
+            <div class="bg-glass rounded-xl p-8 max-w-2xl mx-auto">
+                <i class="fas fa-info-circle text-4xl text-sport-accent mb-4"></i>
+                <h3 class="text-2xl font-display font-bold mb-2">Товаров пока нет</h3>
+                <p class="mb-4">Будьте первым, кто добавит товар в каталог!</p>
+                {% if user.is_authenticated %}
+                <a href="{% url 'sport_app:add_sport' %}" class="btn-primary inline-block">
+                    <i class="fas fa-plus-circle mr-2"></i> Добавить товар
+                </a>
+                {% else %}
+                <a href="{% url 'users_app:login' %}?next={% url 'sport_app:sport_list' %}"
+                   class="btn-primary inline-block">
+                    <i class="fas fa-sign-in-alt mr-2"></i> Войти для добавления
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Пагинация -->
+    {% if is_paginated %}
+    <div class="mt-12 flex justify-center">
+        <div class="bg-glass rounded-full px-6 py-3 flex items-center space-x-6">
+            {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}"
+               class="hover:text-sport-accent transition-colors">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            {% endif %}
+
+            <span class="text-white/80">
+                Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}"
+               class="hover:text-sport-accent transition-colors">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

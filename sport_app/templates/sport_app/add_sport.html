@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Добавить вид спорта{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-12 animate-fade-in">
+    <div class="bg-glass rounded-xl shadow-xl overflow-hidden p-8">
+        <h2 class="text-2xl font-display font-bold text-gradient mb-6">
+            <i class="fas fa-plus-circle mr-2"></i> Добавить вид спорта
+        </h2>
+
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+
+            <!-- Поле изображения -->
+            <div>
+                <label class="block text-sm font-medium mb-2">Изображение</label>
+                <label class="file-input-label">
+                    <span class="flex items-center justify-center">
+                        <i class="fas fa-cloud-upload-alt mr-2"></i>
+                        Выберите файл
+                    </span>
+                    <input type="file" name="image" class="file-input" id="id_image">
+                </label>
+                <div id="file-name" class="file-name">Файл не выбран</div>
+            </div>
+
+            <!-- Остальные поля формы -->
+            {{ form.as_p }}
+
+            <div class="flex justify-end space-x-4 pt-6 border-t border-white/10">
+                <a href="{% url 'sport_app:sport_list' %}" class="btn-secondary">
+                    Отмена
+                </a>
+                <button type="submit" class="btn-primary">
+                    Сохранить
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Показываем имя выбранного файла
+    document.getElementById('id_image').addEventListener('change', function(e) {
+        const fileName = e.target.files[0]?.name || 'Файл не выбран';
+        document.getElementById('file-name').textContent = fileName;
+    });
+</script>
+{% endblock %}

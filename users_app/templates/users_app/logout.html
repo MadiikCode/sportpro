@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Выход из системы{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto px-4 py-12 animate-fade-in">
+    <!-- Карточка выхода -->
+    <div class="bg-glass rounded-xl shadow-xl overflow-hidden p-8 text-center">
+        <!-- Иконка -->
+        <div class="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fas fa-sign-out-alt text-3xl text-red-400"></i>
+        </div>
+        
+        <!-- Заголовок -->
+        <h2 class="text-2xl font-display font-bold mb-3">Выход из системы</h2>
+        <p class="text-white/70 mb-8">Вы уверены, что хотите выйти из своего аккаунта?</p>
+        
+        <!-- Форма выхода -->
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="{% url 'sport_list' %}" class="px-6 py-3 rounded-full bg-white/10 text-center hover:bg-white/20 transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i> Вернуться
+                </a>
+                <button type="submit" class="btn-primary bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700">
+                    <i class="fas fa-sign-out-alt mr-2"></i> Выйти
+                </button>
+            </div>
+        </form>
+        
+        <!-- Дополнительная информация -->
+        <div class="mt-8 pt-6 border-t border-white/10 text-sm text-white/50">
+            <p>Для повторного входа вам потребуется ввести email и пароль</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Кастомные стили для кнопки выхода */
+    .btn-logout {
+        background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+    }
+    
+    .btn-logout:hover {
+        background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
+    }
+</style>
+{% endblock %}

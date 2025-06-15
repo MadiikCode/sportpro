@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ sport.name }} | Детали{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
+    <!-- Хлебные крошки -->
+    <nav class="flex mb-6" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-2">
+            <li>
+                <a href="{% url 'sport_app:sport_list' %}" class="text-sport-primary hover:text-sport-accent transition-colors">
+                    <i class="fas fa-home mr-1"></i> Главная
+                </a>
+            </li>
+            <li>
+                <span class="text-white/50 mx-2">/</span>
+            </li>
+            <li class="text-white/80" aria-current="page">
+                {{ sport.name }}
+            </li>
+        </ol>
+    </nav>
+
+    <!-- Основная информация -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+        <!-- Изображение -->
+        <div class="bg-glass rounded-xl overflow-hidden shadow-lg">
+            {% if sport.image %}
+            <img src="{{ sport.image.url }}" alt="{{ sport.name }}" 
+                 class="w-full h-auto max-h-96 object-cover">
+            {% else %}
+            <div class="h-96 bg-sport-dark/50 flex items-center justify-center">
+                <i class="fas fa-image text-6xl text-white/30"></i>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Детали -->
+        <div class="bg-glass rounded-xl p-6 shadow-lg">
+            <div class="flex justify-between items-start mb-4">
+                <h1 class="text-3xl font-display font-bold text-gradient">{{ sport.name }}</h1>
+                {% if sport.is_olympic %}
+                <span class="bg-yellow-500/20 text-yellow-400 px-3 py-1 rounded-full text-sm flex items-center">
+                    <i class="fas fa-medal mr-1"></i> Олимпийский вид
+                </span>
+                {% endif %}
+            </div>
+
+            <div class="prose prose-invert max-w-none mb-6">
+                <p class="text-white/80">{{ sport.description }}</p>
+            </div>
+
+            <!-- Мета-информация -->
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="bg-sport-dark/50 rounded-lg p-3">
+                    <h3 class="text-sm text-white/60 mb-1">Дата добавления</h3>
+                    <p class="font-medium">
+                        <i class="far fa-calendar-alt mr-2"></i> {{ sport.created_at|date:"d.m.Y" }}
+                    </p>
+                </div>
+                <div class="bg-sport-dark/50 rounded-lg p-3">
+                    <h3 class="text-sm text-white/60 mb-1">Автор</h3>
+                    <p class="font-medium">
+                        <i class="fas fa-user mr-2"></i> {{ sport.author.username }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Кнопки действий -->
+            <div class="flex space-x-3 pt-4 border-t border-white/10">
+                {% if user == sport.author or user.is_superuser %}
+                <a href="{% url 'sport_app:edit_sport' sport.id %}" 
+                   class="btn-primary flex items-center px-4 py-2 bg-sport-primary/80 hover:bg-sport-primary">
+                    <i class="fas fa-edit mr-2"></i> Редактировать
+                </a>
+                <a href="{% url 'sport_app:delete_sport' sport.id %}" 
+                   class="btn-primary flex items-center px-4 py-2 bg-red-500/80 hover:bg-red-500">
+                    <i class="fas fa-trash-alt mr-2"></i> Удалить
+                </a>
+                {% endif %}
+                <a href="{% url 'sport_app:sport_list' %}" 
+                   class="btn-primary flex items-center px-4 py-2 bg-white/10 hover:bg-white/20">
+                    <i class="fas fa-arrow-left mr-2"></i> Назад
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Дополнительные секции -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Правила -->
+        {% if sport.rules %}
+        <div class="bg-glass rounded-xl p-6 shadow-lg">
+            <h2 class="text-2xl font-display font-bold mb-4 text-gradient">
+                <i class="fas fa-book mr-2"></i> Правила
+            </h2>
+            <div class="prose prose-invert max-w-none">
+                {{ sport.rules|linebreaks }}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Оборудование -->
+        {% if sport.equipment %}
+        <div class="bg-glass rounded-xl p-6 shadow-lg">
+            <h2 class="text-2xl font-display font-bold mb-4 text-gradient">
+                <i class="fas fa-tools mr-2"></i> Необходимое оборудование
+            </h2>
+            <div class="prose prose-invert max-w-none">
+                {{ sport.equipment|linebreaks }}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Популярные страны -->
+    {% if sport.popular_countries %}
+    <div class="bg-glass rounded-xl p-6 shadow-lg mt-8">
+        <h2 class="text-2xl font-display font-bold mb-4 text-gradient">
+            <i class="fas fa-globe-americas mr-2"></i> Популярные страны
+        </h2>
+        <p class="text-white/80">{{ sport.popular_countries }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Отзывы -->
+    <div class="bg-glass rounded-xl p-6 shadow-lg mt-8">
+        <h2 class="text-2xl font-display font-bold mb-4 text-gradient">
+            <i class="fas fa-star mr-2"></i> Отзывы и оценки
+        </h2>
+        
+        {% if user.is_authenticated %}
+        <!-- Форма добавления отзыва -->
+            {% csrf_token %}
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Ваша оценка</label>
+                <div class="flex space-x-1">
+                    {% for i in "12345" %}
+                    <button type="submit" name="rating" value="{{ i }}" class="text-2xl hover:scale-110 transition-transform">
+                        {% if i|add:"0" <= sport.user_rating %}
+                        <i class="fas fa-star text-yellow-400"></i>
+                        {% else %}
+                        <i class="far fa-star text-yellow-400"></i>
+                        {% endif %}
+                    </button>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="mb-4">
+                <textarea name="comment" rows="3" 
+                          class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-sport-primary focus:border-transparent outline-none transition-all"
+                          placeholder="Ваш комментарий..."></textarea>
+            </div>
+            <button type="submit" class="btn-primary px-4 py-2">
+                <i class="fas fa-paper-plane mr-2"></i> Отправить отзыв
+            </button>
+        </form>
+        {% else %}
+        <div class="bg-sport-dark/50 rounded-lg p-4 mb-6 text-center">
+            <p class="mb-2">Войдите, чтобы оставить отзыв</p>
+            <a href="{% url 'users_app:login' %}?next={% url 'sport_app:sport_detail' sport.id %}" 
+               class="btn-primary inline-flex items-center px-4 py-2">
+                <i class="fas fa-sign-in-alt mr-2"></i> Войти
+            </a>
+        </div>
+        {% endif %}
+
+        <!-- Список отзывов -->
+        <div class="space-y-4">
+            {% for review in sport.reviews.all %}
+            <div class="bg-sport-dark/30 rounded-lg p-4">
+                <div class="flex justify-between items-center mb-2">
+                    <div class="font-medium">{{ review.user.username }}</div>
+                    <div class="text-sm text-white/60">{{ review.created_at|date:"d.m.Y H:i" }}</div>
+                </div>
+                <div class="flex mb-2">
+                    {% for i in "12345" %}
+                    {% if i|add:"0" <= review.rating %}
+                    <i class="fas fa-star text-yellow-400"></i>
+                    {% else %}
+                    <i class="far fa-star text-yellow-400"></i>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                {% if review.comment %}
+                <p class="text-white/80">{{ review.comment }}</p>
+                {% endif %}
+            </div>
+            {% empty %}
+            <p class="text-center text-white/60 py-4">Пока нет отзывов. Будьте первым!</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

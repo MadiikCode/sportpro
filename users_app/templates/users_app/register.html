@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Регистрация{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto px-4 py-12 animate-fade-in">
+    <!-- Карточка регистрации -->
+    <div class="bg-glass rounded-xl shadow-xl overflow-hidden p-8">
+        <!-- Заголовок с иконкой -->
+        <div class="text-center mb-8">
+            <div class="w-16 h-16 bg-sport-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-user-plus text-3xl text-gradient"></i>
+            </div>
+            <h2 class="text-2xl font-display font-bold text-gradient mb-2">Создать аккаунт</h2>
+            <p class="text-white/70">Заполните форму для регистрации</p>
+        </div>
+
+        <!-- Форма регистрации -->
+        <form method="post" class="space-y-5">
+            {% csrf_token %}
+
+            <!-- Поля формы -->
+            {% for field in form %}
+            <div>
+                <label class="block text-sm font-medium mb-2">
+                    {{ field.label }}
+                    {% if field.field.required %}<span class="text-red-400">*</span>{% endif %}
+                </label>
+                <div class="relative">
+                    {% if field.name == 'username' %}
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <i class="fas fa-user text-white/50"></i>
+                    </div>
+                    {% elif field.name == 'email' %}
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <i class="fas fa-envelope text-white/50"></i>
+                    </div>
+                    {% elif 'password' in field.name %}
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <i class="fas fa-lock text-white/50"></i>
+                    </div>
+                    {% endif %}
+
+                    {{ field }}
+
+                    {% if 'password' in field.name %}
+                    <button type="button" class="absolute inset-y-0 right-0 flex items-center pr-3 toggle-password" data-target="{{ field.auto_id }}">
+                        <i class="fas fa-eye text-white/50 hover:text-sport-accent"></i>
+                    </button>
+                    {% endif %}
+                </div>
+
+                {% if field.help_text %}
+                <p class="mt-1 text-xs text-white/50">{{ field.help_text }}</p>
+                {% endif %}
+
+                {% if field.errors %}
+                <div class="mt-1 text-sm text-red-400">{{ field.errors }}</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <!-- Кнопка регистрации -->
+            <div class="pt-2">
+                <button type="submit" class="btn-primary w-full flex items-center justify-center py-3">
+                    <i class="fas fa-user-plus mr-2"></i> Зарегистрироваться
+                </button>
+            </div>
+        </form>
+
+        <!-- Сообщения об ошибках -->
+        {% if form.non_field_errors %}
+        <div class="mt-6 bg-red-500/10 border border-red-500/30 rounded-lg p-4">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-exclamation-circle text-red-400"></i>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-red-300">Ошибка регистрации</h3>
+                    <div class="mt-2 text-sm text-red-200">
+                        {{ form.non_field_errors }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Ссылка на вход -->
+        <div class="mt-6 text-center text-sm text-white/70">
+            <p>Уже есть аккаунт?
+                <a href="{% url 'users_app:login' %}" class="font-medium text-sport-primary hover:text-sport-accent transition-colors">
+                    Войти в систему
+                </a>
+            </p>
+        </div>
+
+        <!-- Условия использования -->
+        <div class="mt-4 text-center text-xs text-white/50">
+            <p>Нажимая "Зарегистрироваться", вы соглашаетесь с нашими
+                <a href="#" class="underline hover:text-sport-primary">Условиями использования</a>
+                и <a href="#" class="underline hover:text-sport-primary">Политикой конфиденциальности</a>.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Стилизация полей формы -->
+<style>
+    #id_username,
+    #id_email,
+    #id_password1,
+    #id_password2 {
+        @apply w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-sport-primary focus:border-transparent outline-none transition-all;
+    }
+
+    /* Поля с иконками */
+    #id_username, #id_email, #id_password1, #id_password2 {
+        @apply pl-10;
+    }
+
+    /* Поля паролей */
+    #id_password1, #id_password2 {
+        @apply pr-10;
+    }
+
+    /* Чекбоксы */
+    input[type="checkbox"] {
+        @apply rounded bg-white/5 border-white/10 text-sport-primary focus:ring-sport-primary;
+    }
+</style>
+
+<!-- Скрипт для переключения видимости пароля -->
+<script>
+    document.querySelectorAll('.toggle-password').forEach(button => {
+        button.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-target');
+            const passwordInput = document.getElementById(targetId);
+            const icon = this.querySelector('i');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        });
+    });
+</script>
+{% endblock %}

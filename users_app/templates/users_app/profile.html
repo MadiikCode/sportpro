@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}Мой профиль{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
+    <!-- Заголовок профиля -->
+    <div class="text-center mb-12">
+        <h1 class="text-3xl md:text-4xl font-display font-bold text-gradient mb-4">Мой профиль</h1>
+        <div class="flex items-center justify-center space-x-2">
+            <span class="bg-sport-primary/20 text-sport-primary text-xs font-medium px-2.5 py-0.5 rounded-full">
+                {% if user.is_staff %}Администратор{% else %}Пользователь{% endif %}
+            </span>
+            <span class="text-sm text-white/70">Зарегистрирован: {{ user.date_joined|date:"d.m.Y" }}</span>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Боковая панель -->
+        <div class="lg:col-span-1">
+            <!-- Карточка пользователя -->
+            <div class="bg-glass rounded-xl p-6 shadow-lg">
+                <div class="flex flex-col items-center">
+                    <!-- Аватар -->
+                    <div class="relative mb-4">
+                        <div class="w-32 h-32 rounded-full bg-gradient-to-br from-sport-primary to-sport-accent flex items-center justify-center text-4xl text-white">
+                            {% if user.first_name %}
+                                {{ user.first_name|first|upper }}
+                            {% endif %}
+                        </div>
+                        <button class="absolute bottom-0 right-0 bg-sport-accent rounded-full p-2 hover:scale-110 transition-transform">
+                            <i class="fas fa-camera text-white text-sm"></i>
+                        </button>
+                    </div>
+
+                    <!-- Информация -->
+                    <h3 class="text-xl font-display font-bold mb-1">
+                        {% if user.first_name %}{{ user.first_name }} {{ user.last_name }}{% else %}{{ user.username }}{% endif %}
+                    </h3>
+                    <p class="text-white/80 mb-4">{{ user.email }}</p>
+
+                    <!-- Статистика -->
+                    <div class="grid grid-cols-2 gap-4 w-full mb-6">
+                        <div class="bg-white/5 rounded-lg p-3 text-center">
+                            <div class="text-sport-accent font-bold text-xl">12</div>
+                            <div class="text-xs text-white/70">Товаров</div>
+                        </div>
+                        <div class="bg-white/5 rounded-lg p-3 text-center">
+                            <div class="text-sport-accent font-bold text-xl">3</div>
+                            <div class="text-xs text-white/70">Активных</div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+        <!-- Основное содержимое -->
+        <div class="lg:col-span-2">
+
+
+                {% if user_products %}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {% for product in user_products %}
+                    <div class="bg-white/5 rounded-xl p-4 flex items-start border border-white/10 hover:border-sport-primary/30 transition-colors">
+                        {% if product.img %}
+                        <img src="{{ product.img.url }}" alt="{{ product.name }}" class="w-16 h-16 object-cover rounded-lg mr-4">
+                        {% else %}
+                        <div class="w-16 h-16 bg-sport-dark/50 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-image text-white/30"></i>
+                        </div>
+                        {% endif %}
+                        <div class="flex-1">
+                            <h3 class="font-medium">{{ product.name }}</h3>
+                            <p class="text-sm text-white/60 mb-2">{{ product.created_at|date:"d.m.Y" }}</p>
+                            <div class="flex space-x-2">
+                                <a href="{% url 'edit_sport' product.id %}" class="text-xs bg-white/10 hover:bg-white/20 px-2 py-1 rounded">
+                                    <i class="fas fa-edit mr-1"></i> Изменить
+                                </a>
+                                <a href="{% url 'delete_sport' product.id %}" class="text-xs bg-red-500/10 hover:bg-red-500/20 px-2 py-1 rounded">
+                                    <i class="fas fa-trash mr-1"></i> Удалить
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-8">
+                    <i class="fas fa-box-open text-4xl text-white/30 mb-3"></i>
+                    <h3 class="text-lg font-medium mb-2">У вас пока нет товаров</h3>
+                    <p class="text-white/60 mb-4">Добавьте свой первый товар в каталог</p>
+                    <a href="{% url 'sport_app:add_sport' %}" class="btn-primary inline-flex items-center px-4 py-2">
+                        <i class="fas fa-plus mr-2"></i> Добавить товар
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+                    
+                    <div class="flex items-start">
+                        <div class="bg-sport-accent/20 text-sport-accent p-2 rounded-lg mr-4">
+                            <i class="fas fa-sign-in-alt"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-medium">Вход в систему</h3>
+                            <p class="text-sm text-white/60">Последний вход: 15.06.2023 14:32</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Кастомные стили для аватара */
+    .avatar-gradient {
+        background: linear-gradient(135deg, #3B82F6 0%, #F59E0B 100%);
+    }
+    
+    /* Стили для элементов активности */
+    .activity-item {
+        transition: all 0.3s ease;
+    }
+    
+    .activity-item:hover {
+        transform: translateX(5px);
+    }
+</style>
+
+<script>
+    // Анимация при наведении на элементы активности
+    document.querySelectorAll('.activity-item').forEach(item => {
+        item.addEventListener('mouseenter', () => {
+            item.querySelector('div:first-child').classList.add('scale-110');
+        });
+        item.addEventListener('mouseleave', () => {
+            item.querySelector('div:first-child').classList.remove('scale-110');
+        });
+    });
+</script>
+{% endblock %}
