@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.views.generic import ListView
 from django.core.paginator import Paginator
 from django.db.models import Q
-from .models import SportCategory
+from .models import SportCategory, Category
 from .forms import SportCategoryForm
 
 from django.views.generic import DetailView
@@ -21,6 +21,7 @@ class SportListView(ListView):
     def get_queryset(self):
         queryset = super().get_queryset()
         search_query = self.request.GET.get('search')
+        category_id = self.request.GET.get('category')  # Получаем ID категории из запроса
 
         if search_query:
             queryset = queryset.filter(
@@ -28,13 +29,16 @@ class SportListView(ListView):
                 Q(description__icontains=search_query)
             )
 
-        return queryset.order_by('-created_at')
+        if category_id:  # Фильтруем по категории, если она выбрана
+            queryset = queryset.filter(category_id=category_id)
 
+        return queryset.order_by('-created_at')
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['search_query'] = self.request.GET.get('search', '')
+        context['categories'] = Category.objects.all()  # Все категории для фильтрации
+        context['selected_category'] = self.request.GET.get('category', '')  # Выбранная категория
         return context
-
 
 @login_required
 

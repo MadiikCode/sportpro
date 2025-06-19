@@ -1,9 +1,10 @@
 from django import forms
-from .models import SportCategory
+from .models import SportCategory, Category
 
 class SportCategoryForm(forms.ModelForm):
     class Meta:
         model = SportCategory
+        category = forms.ModelChoiceField(queryset=Category.objects.all())
         fields = ['name', 'description', 'image', 'rules', 'equipment', 'popular_countries']
         widgets = {
             'description': forms.Textarea(attrs={'rows': 4}),
@@ -15,5 +16,6 @@ class SportCategoryForm(forms.ModelForm):
             'image': 'Изображение',
             'rules': 'Основные правила',
             'equipment': 'Необходимое оборудование',
-            'popular_countries': 'Популярные страны'
+            'popular_countries': 'Популярные страны',
+            category: 'Категория'
         }

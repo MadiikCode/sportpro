@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SportPro | {% block title %}{% endblock %}</title>
+    <title>SportHub | {% block title %}{% endblock %}</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -111,13 +111,15 @@
                 <!-- Logo -->
 <!-- Используйте пространство имен приложения -->
               <a href="{% url 'sport_app:sport_list' %}" class="flex items-center space-x-2">                    <i class="fas fa-dumbbell text-sport-accent text-2xl"></i>
-                    <span class="text-2xl font-display font-bold text-gradient">SportPro</span>
+                    <span class="text-2xl font-display font-bold text-gradient">SportHub</span>
                 </a>
 
                 <!-- Desktop Menu -->
                 <div class="hidden md:flex items-center space-x-8">
                     <a href="#" class="hover:text-sport-accent transition-colors font-medium">Тренеры</a>
                     <a href="#" class="hover:text-sport-accent transition-colors font-medium">Блог</a>
+                    <a href="#" class="hover:text-sport-accent transition-colors font-medium">Контакты</a>
+                </div>
 
                     {% if user.is_authenticated %}
                         <div class="flex items-center space-x-4">
@@ -197,7 +199,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div>
-                    <h3 class="text-lg font-display font-bold mb-4 text-gradient">SportPro</h3>
+                    <h3 class="text-lg font-display font-bold mb-4 text-gradient">SportHub</h3>
                     <p class="text-white/70">Лучшие спортивные товары для профессионалов и любителей</p>
                 </div>
                 <div>
@@ -213,11 +215,11 @@
                     <ul class="space-y-2">
                         <li class="flex items-center space-x-2">
                             <i class="fas fa-phone text-sport-accent"></i>
-                            <span>+7 (123) 456-7890</span>
+                            <span>+996(777)777-777</span>
                         </li>
                         <li class="flex items-center space-x-2">
                             <i class="fas fa-envelope text-sport-accent"></i>
-                            <span>info@sportpro.ru</span>
+                            <span>sporthub@sportpro.ru</span>
                         </li>
                     </ul>
                 </div>
@@ -237,7 +239,7 @@
                 </div>
             </div>
             <div class="border-t border-white/10 mt-8 pt-8 text-center text-white/50">
-                <p>© 2023 SportPro. Все права защищены.</p>
+                <p>© 2025 SportHub. Все права защищены.</p>
             </div>
         </div>
     </footer>

@@ -5,6 +5,30 @@ from django.utils.translation import gettext_lazy as _
 
 User = get_user_model()
 
+
+class Category(models.Model):
+    name = models.CharField(
+        _('name'),
+        max_length=100,
+        help_text=_('Enter the name of the category')
+    )
+    description = models.TextField(
+        _('description'),
+        help_text=_('Describe the category')
+    )
+    created_at = models.DateTimeField(
+        _('created at'),
+        auto_now_add=True
+    )
+    updated_at = models.DateTimeField(
+        _('updated at'),
+        auto_now=True
+    )
+
+    def __str__(self):
+        return self.name
+
+
 class SportCategory(models.Model):
     name = models.CharField(
         _('name'),
@@ -46,6 +70,14 @@ class SportCategory(models.Model):
     created_at = models.DateTimeField(
         _('created at'),
         auto_now_add=True
+    )
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.CASCADE,
+        related_name='sports',
+        verbose_name=_('category'),
+        blank=True,
+        null=True
     )
     updated_at = models.DateTimeField(
         _('updated at'),
